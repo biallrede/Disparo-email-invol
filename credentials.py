@@ -2,7 +2,7 @@ import pyodbc
 
 
 def credenciais_banco():
-    conn = pyodbc.connect('Driver={PostgreSQL ODBC Driver(UNICODE)};'
+    conn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};'
                         'Server=134.65.24.116;'
                         'Port=9432;'
                         'Database=hubsoft;'
