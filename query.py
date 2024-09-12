@@ -28,7 +28,8 @@ def consulta_clientes_invol():
             AND B.gera_grafico = true									-- Motivo de Cancelamento Válido
             AND B.id_motivo_cancelamento IN (20, 42)				-- Apenas Cancelamentos Involuntários
             AND A.id_servico NOT IN (5165, 8134, 4179, 4219, 9451)	-- Aluguel de Porta, Locação de Infraestrutura, Rede Neutra  
-            AND A.data_cancelamento::date = CURRENT_DATE - interval '1 day'
+            --AND A.data_cancelamento::date between '2024-09-01' and '2024-09-12'
+			AND A.data_cancelamento::date = CURRENT_DATE - interval '1 day'
             AND E.ativo = true 
             AND E.data_pagamento isnull 
                 '''
