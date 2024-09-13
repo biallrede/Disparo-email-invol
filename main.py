@@ -4,14 +4,22 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from tabulate import tabulate
 import numpy as np
-from datetime import datetime
+from datetime import datetime, date
 from rotas import *
 import schedule
 from apscheduler.schedulers.background import BackgroundScheduler
 import threading
 
-def dispara_email():
-    df_clientes = consulta_clientes_invol()
+def dispara_email(rotina):
+    if rotina == 1:
+        df_clientes = consulta_clientes_invol()
+    if rotina == 2:
+        df_clientes = consulta_clientes_invol_seg()
+    if rotina == 3:
+        df_clientes = consulta_clientes_invol_feriado_outros_dias()
+    if rotina == 4:
+        df_clientes = consulta_clientes_invol_feriado_seg_ou_sexta()
+
     copia_df = df_clientes
     # Agrupa as faturas pelo 'id_cliente_servico'
     df = copia_df.fillna('Sem email cadastrado') 
@@ -120,16 +128,55 @@ def enviar_email(assunto,mensagem,email):
             servidor_smtp.quit()
 
 
+# Lista de feriados nacionais no Brasil
+feriados = [
+    date(datetime.now().year, 1, 1),   # Confraternização Universal
+    date(datetime.now().year, 4, 21),  # Tiradentes
+    date(datetime.now().year, 5, 1),   # Dia do Trabalhador
+    date(datetime.now().year, 9, 7),   # Independência do Brasil
+    date(datetime.now().year, 10, 12), # Nossa Senhora Aparecida
+    date(datetime.now().year, 11, 2),  # Finados
+    date(datetime.now().year, 11, 15), # Proclamação da República
+    date(datetime.now().year, 12, 25), # Natal
+    
+]
+
 scheduler = BackgroundScheduler()
 
 def rotina1():
-    dispara_email()
+    # Obtém a data atual
+    hoje = datetime.now().date()
     
+    # Verifica se hoje é um feriado ou fim de semana
+    if hoje.weekday() < 5 and hoje not in feriados:  # 0 é segunda-feira, 4 é sexta-feira
+        dispara_email(1)
 
-schedule.every().day.at("09:00").do(rotina1)
+    if (hoje.weekday() ==  1 or hoje.weekday() ==  2 or hoje.weekday() == 3) and hoje in feriados:  # 0 é segunda-feira, 4 é sexta-feira
+        dispara_email(3) 
+    
+    if (hoje.weekday() ==  0 or hoje.weekday() ==  4 ) and hoje in feriados:  # 0 é segunda-feira, 4 é sexta-feira
+        dispara_email(4)
+
+def rotina2():
+    # Obtém a data atual
+    hoje = datetime.now().date()
+    
+    # Verifica se hoje é um feriado ou fim de semana
+    if hoje.weekday() < 5 and hoje not in feriados:  # 0 é segunda-feira, 4 é sexta-feira
+        dispara_email(2)      
+
+  
+
+# Agenda a execução da rotina somente de segunda a sexta às 09:00
+schedule.every().monday.at("09:00").do(rotina2)
+schedule.every().tuesday.at("09:00").do(rotina1)
+schedule.every().wednesday.at("09:00").do(rotina1)
+schedule.every().thursday.at("09:00").do(rotina1)
+schedule.every().friday.at("09:00").do(rotina1)
+
 scheduler.start()
 
-while (1 == 1):
+while True:
     schedule.run_pending()
     threading.Event().wait(1)
 
