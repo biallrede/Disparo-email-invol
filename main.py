@@ -18,7 +18,7 @@ def dispara_email(rotina):
     if rotina == 3:
         df_clientes = consulta_clientes_invol_feriado_outros_dias()
     if rotina == 4:
-        df_clientes = consulta_clientes_invol_feriado_seg_ou_sexta()
+        df_clientes = consulta_clientes_invol_feriado_seg()
 
     copia_df = df_clientes
     # Agrupa as faturas pelo 'id_cliente_servico'
@@ -154,8 +154,11 @@ def rotina1():
     if (hoje.weekday() ==  1 or hoje.weekday() ==  2 or hoje.weekday() == 3) and hoje in feriados:  # 0 é segunda-feira, 4 é sexta-feira
         dispara_email(3) 
     
-    if (hoje.weekday() ==  0 or hoje.weekday() ==  4 ) and hoje in feriados:  # 0 é segunda-feira, 4 é sexta-feira
+    if (hoje.weekday() ==  0) and hoje in feriados:  # 0 é segunda-feira, 4 é sexta-feira
         dispara_email(4)
+
+    if (hoje.weekday() ==  4) and hoje in feriados:  # 0 é segunda-feira, 4 é sexta-feira
+        dispara_email(2)
 
 def rotina2():
     # Obtém a data atual

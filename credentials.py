@@ -11,7 +11,7 @@ def credenciais_banco():
                         password='73f4cc9b2667d6c44d20d1a0d612b26c5e1763c2'
                         )
    
-    return conn.cursor()
+    return conn
 
 # para rodar no windows 
 # def credenciais_banco():

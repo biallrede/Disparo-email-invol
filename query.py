@@ -66,7 +66,7 @@ def consulta_clientes_invol_seg():
             AND B.gera_grafico = true									-- Motivo de Cancelamento Válido
             AND B.id_motivo_cancelamento IN (20, 42)				-- Apenas Cancelamentos Involuntários
             AND A.id_servico NOT IN (5165, 8134, 4179, 4219, 9451)	-- Aluguel de Porta, Locação de Infraestrutura, Rede Neutra  
-            AND A.data_cancelamento::date between (CURRENT_DATE - interval '2 day') and CURRENT_DATE 
+            AND A.data_cancelamento::date between (CURRENT_DATE - interval '3 day') and (CURRENT_DATE - interval '1 day') 
             AND E.ativo = true 
             AND E.data_pagamento isnull 
                 '''
@@ -103,7 +103,7 @@ def consulta_clientes_invol_feriado_outros_dias():
             AND B.gera_grafico = true									-- Motivo de Cancelamento Válido
             AND B.id_motivo_cancelamento IN (20, 42)				-- Apenas Cancelamentos Involuntários
             AND A.id_servico NOT IN (5165, 8134, 4179, 4219, 9451)	-- Aluguel de Porta, Locação de Infraestrutura, Rede Neutra  
-            AND A.data_cancelamento::date between (CURRENT_DATE - interval '1 day') and CURRENT_DATE 
+            AND A.data_cancelamento::date = (CURRENT_DATE - interval '1 day') 
             AND E.ativo = true 
             AND E.data_pagamento isnull 
                 '''
@@ -113,7 +113,7 @@ def consulta_clientes_invol_feriado_outros_dias():
 
     return df
 
-def consulta_clientes_invol_feriado_seg_ou_sexta():
+def consulta_clientes_invol_feriado_seg():
     conn = credenciais_banco()
     query = '''
                 SELECT 
